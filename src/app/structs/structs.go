@@ -1,11 +1,9 @@
 package structs
 
-import "time"
-
-type status struct {
-	covidCasesApi string
-	covidPolicy   string
-	webhooks      []string
-	version       string
-	uptime        time.Time
+type Status struct {
+	CovidCasesApi  int
+	CovidPolicyApi int
+	Webhooks       string
+	Version        string
+	Uptime         float64
 }
