@@ -1,3 +1,4 @@
 #no executable files
 *.exe
+/src/res/*
 
