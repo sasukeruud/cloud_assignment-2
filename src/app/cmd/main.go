@@ -11,7 +11,7 @@ func main() {
 	fmt.Println("Running")
 	fmt.Print(constants.VERSION)
 
-	//http.HandleFunc(constants.DEFAULT_PATH, )
+	http.HandleFunc(constants.DEFAULT_PATH, handlers.DefaultHandler)
 	//http.HandleFunc(constants.CASES_PATH)
 	//http.HandleFunc(constants.POLICY_PATH, )
 	http.HandleFunc(constants.STATUS_PATH, handlers.StatusHandler)
