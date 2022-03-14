@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+/*
+Default web handler that gives a short descritption on how to use the api*/
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	default:
