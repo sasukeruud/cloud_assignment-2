@@ -32,3 +32,23 @@ func ReadCasesApi(search string) []structs.Cases {
 
 	return casesInfo
 }
+
+func ReadPolicyApi(search string) []structs.Policy {
+	var policyInfo []structs.Policy
+
+	response, err := http.Get(constants.CORONA_POLICY_API + search)
+
+	if err != nil {
+		fmt.Print(err.Error())
+		os.Exit(1)
+	}
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.Unmarshal(responseData, &policyInfo)
+
+	return policyInfo
+}

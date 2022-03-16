@@ -16,3 +16,6 @@ type Cases struct {
 	Deaths      int64
 	Growth_rate float64
 }
+
+type Policy struct {
+}
