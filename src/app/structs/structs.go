@@ -18,4 +18,8 @@ type Cases struct {
 }
 
 type Policy struct {
+	Country_code string
+	Scope        string
+	Stringency   string
+	Policies     int
 }
