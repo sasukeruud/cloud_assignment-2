@@ -12,7 +12,7 @@ func main() {
 	fmt.Print(constants.VERSION)
 
 	http.HandleFunc(constants.DEFAULT_PATH, handlers.DefaultHandler)
-	//http.HandleFunc(constants.CASES_PATH)
+	http.HandleFunc(constants.CASES_PATH, handlers.CasesHandler)
 	//http.HandleFunc(constants.POLICY_PATH, )
 	http.HandleFunc(constants.STATUS_PATH, handlers.StatusHandler)
 	//http.HandleFunc(constants.NOTIFICATION_PATH, )
