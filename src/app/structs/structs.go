@@ -7,3 +7,12 @@ type Status struct {
 	Version        string
 	Uptime         float64
 }
+
+type Cases struct {
+	Country     string
+	Date        string
+	Confirmed   int64
+	Recovers    int64
+	Deaths      int64
+	Growth_rate float64
+}
