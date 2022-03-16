@@ -13,7 +13,7 @@ func main() {
 
 	http.HandleFunc(constants.DEFAULT_PATH, handlers.DefaultHandler)
 	http.HandleFunc(constants.CASES_PATH, handlers.CasesHandler)
-	//http.HandleFunc(constants.POLICY_PATH, )
+	http.HandleFunc(constants.POLICY_PATH, handlers.PolicyHandler)
 	http.HandleFunc(constants.STATUS_PATH, handlers.StatusHandler)
 	//http.HandleFunc(constants.NOTIFICATION_PATH, )
 	http.ListenAndServe(":8080", nil)
