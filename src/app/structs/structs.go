@@ -9,12 +9,15 @@ type Status struct {
 }
 
 type Cases struct {
-	Country     string
-	Date        string
-	Confirmed   int64
-	Recovers    int64
-	Deaths      int64
-	Growth_rate float64
+	Data struct {
+		Country struct {
+			Name       string `json:"name"`
+			MostRecent struct {
+				Date      string `json:"date"`
+				Confirmed int    `json:"confirmed"`
+			} `json:"mostRecent"`
+		} `json:"country"`
+	} `json:"data"`
 }
 
 type Policy struct {
