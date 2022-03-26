@@ -20,8 +20,8 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func statusHandlerGet(w http.ResponseWriter, r *http.Request) {
-	respCases, errCases := http.Get(constants.COVID_CASES_API)
-	respPolicy, errPolicy := http.Get(constants.CORONA_POLICY_API)
+	respCases, errCases := http.Get("https://covid19-graphql.now.sh" + "?query=%7B__typename%7D")
+	respPolicy, errPolicy := http.Get(constants.CORONA_POLICY_API + "/NOR" + "/2021-01-01")
 
 	if errCases != nil || errPolicy != nil {
 		log.Fatal(errCases)
