@@ -3,34 +3,44 @@ package readjson
 import (
 	constants "assignment_2/src/app"
 	"assignment_2/src/app/structs"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 /*
 function to read out the json data from the api*/
-func ReadCasesApi(search string) []structs.Cases {
-	var casesInfo []structs.Cases
-
-	response, err := http.Get(constants.COVID_CASES_API + search)
-
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
+func ReadCasesApi(search string) []byte {
+	jsonData := map[string]string{
+		"query": `
+			{
+				country(name: "` + search + `"){
+					name
+					mostRecent{
+						date(format: "yyyy-MM-dd")
+						confirmed
+					}
+				}
+			}`,
 	}
 
-	responseData, err := ioutil.ReadAll(response.Body)
+	jsonValue, _ := json.Marshal(jsonData)
+	request, err := http.NewRequest("POST", constants.COVID_CASES_API, bytes.NewBuffer(jsonValue))
+	client := &http.Client{Timeout: time.Second * 10}
+	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("The HTTP request failed with error %s\n", err)
 	}
+	defer response.Body.Close()
 
-	json.Unmarshal(responseData, &casesInfo)
+	data, _ := ioutil.ReadAll(response.Body)
 
-	return casesInfo
+	return data
 }
 
 func ReadPolicyApi(search string) []structs.Policy {
