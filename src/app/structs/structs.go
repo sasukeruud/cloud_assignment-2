@@ -21,8 +21,18 @@ type Cases struct {
 }
 
 type Policy struct {
-	Country_code string
-	Scope        string
-	Stringency   string
-	Policies     int
+	PolicyActions []struct {
+		PolicyTypeCode    string      `json:"policy_type_code"`
+		PolicyTypeDisplay string      `json:"policy_type_display"`
+		Policyvalue       string      `json:"policyvalue"`
+		IsGeneral         bool        `json:"is_general"`
+		Notes             interface{} `json:"notes"`
+	} `json:"policyActions"`
+	StringencyData struct {
+		DateValue        string  `json:"date_value"`
+		CountryCode      string  `json:"country_code"`
+		Confirmed        int     `json:"confirmed"`
+		StringencyActual float64 `json:"stringency_actual"`
+		Stringency       float64 `json:"stringency"`
+	} `json:"stringencyData"`
 }
