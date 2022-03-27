@@ -43,10 +43,11 @@ func ReadCasesApi(search string) []byte {
 	return data
 }
 
-func ReadPolicyApi(search string) []structs.Policy {
+func ReadPolicyApi(country, date string) []structs.Policy {
 	var policyInfo []structs.Policy
+	var policy structs.Policy
 
-	response, err := http.Get(constants.CORONA_POLICY_API + search)
+	response, err := http.Get(constants.CORONA_POLICY_API + country + date)
 
 	if err != nil {
 		fmt.Print(err.Error())
@@ -58,7 +59,9 @@ func ReadPolicyApi(search string) []structs.Policy {
 		log.Fatal(err)
 	}
 
-	json.Unmarshal(responseData, &policyInfo)
+	json.Unmarshal(responseData, &policy)
+
+	policyInfo = append(policyInfo, policy)
 
 	return policyInfo
 }
