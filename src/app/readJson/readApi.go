@@ -24,6 +24,9 @@ func ReadCasesApi(search string) []byte {
 					mostRecent{
 						date(format: "yyyy-MM-dd")
 						confirmed
+						deaths
+						recovered
+						growthRate
 					}
 				}
 			}`,
