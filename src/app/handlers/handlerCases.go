@@ -2,7 +2,6 @@ package handlers
 
 import (
 	readjson "assignment_2/src/app/readJson"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"path"
@@ -15,24 +14,19 @@ func CasesHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		casesGetRequest(w, r)
 	default:
-		fmt.Println("The only http method implemented is the GET request")
+		fmt.Fprintf(w, "The only http method implemented is the GET request")
 	}
 }
 
 func casesGetRequest(w http.ResponseWriter, r *http.Request) {
 	search := path.Base(r.URL.Path)
-
 	if search != "cases" {
-		w.Header().Set("contet-type", "application/json")
 
-		encoder := json.NewEncoder(w)
+		w.Header().Set("content-type", "application/json")
 
-		err := encoder.Encode(readjson.ReadCasesApi(search))
-		if err != nil {
-			http.Error(w, "Error during encoding", http.StatusInternalServerError)
-		}
+		fmt.Fprintf(w, string(readjson.ReadCasesApi(search)))
 
 	} else {
-		fmt.Println("You may have tried a different http request than GET or you have not entered a search word")
+		fmt.Fprintf(w, "You may have tried a different http request than GET or you have not entered a search word")
 	}
 }
