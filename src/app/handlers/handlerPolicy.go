@@ -31,6 +31,6 @@ func getPolicyRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		fmt.Println("You may have tried a different http request than GET or you have not entered a search word")
+		fmt.Fprintf(w, "You may have tried a different http request than GET or you have not entered a search word")
 	}
 }
