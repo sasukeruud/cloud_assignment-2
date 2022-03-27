@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"path"
+	"strings"
 )
 
 func PolicyHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,14 +18,14 @@ func PolicyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPolicyRequest(w http.ResponseWriter, r *http.Request) {
-	search := path.Base(r.URL.Path)
+	search := strings.SplitAfter(r.URL.Path, "/")
 
-	if search != "cases" {
+	if search[len(search)-1] != "policy" {
 		w.Header().Set("contet-type", "application/json")
 
 		encoder := json.NewEncoder(w)
 
-		err := encoder.Encode(readjson.ReadPolicyApi(search))
+		err := encoder.Encode(readjson.ReadPolicyApi(search[4], search[5]))
 		if err != nil {
 			http.Error(w, "Error during encoding", http.StatusInternalServerError)
 		}
