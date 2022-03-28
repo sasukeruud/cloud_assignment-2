@@ -36,3 +36,10 @@ type Policy struct {
 		Stringency       float64 `json:"stringency"`
 	} `json:"stringencyData"`
 }
+
+type Notification struct {
+	WebhookID string
+	Url       string
+	Country   string
+	Calls     int
+}
