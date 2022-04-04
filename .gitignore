@@ -2,3 +2,5 @@
 *.exe
 /src/res/*
 
+#firebase key
+robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json
