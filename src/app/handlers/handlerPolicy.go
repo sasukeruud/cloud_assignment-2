@@ -21,7 +21,7 @@ func getPolicyRequest(w http.ResponseWriter, r *http.Request) {
 	search := strings.SplitAfter(r.URL.Path, "/")
 
 	if search[len(search)-1] != "policy" {
-		w.Header().Set("contet-type", "application/json")
+		w.Header().Set("content-type", "application/json")
 
 		encoder := json.NewEncoder(w)
 

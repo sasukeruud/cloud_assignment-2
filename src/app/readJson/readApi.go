@@ -32,6 +32,7 @@ func ReadCasesApi(search string) []byte {
 			}`,
 	}
 
+	//https://www.thepolyglotdeveloper.com/2020/02/interacting-with-a-graphql-api-with-golang/
 	jsonValue, _ := json.Marshal(jsonData)
 	request, err := http.NewRequest("POST", constants.COVID_CASES_API, bytes.NewBuffer(jsonValue))
 	client := &http.Client{Timeout: time.Second * 10}
@@ -67,4 +68,10 @@ func ReadPolicyApi(country, date string) []structs.Policy {
 	policyInfo = append(policyInfo, policy)
 
 	return policyInfo
+}
+
+func ReadNotification(search string) []structs.Webhooks {
+	var notification []structs.Webhooks
+
+	return notification
 }
