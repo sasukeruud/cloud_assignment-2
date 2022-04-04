@@ -2,7 +2,6 @@ package main
 
 import (
 	constants "assignment_2/src/app"
-	firebase "assignment_2/src/app/firebase"
 	"assignment_2/src/app/handlers"
 	"fmt"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 
 func main() {
 	fmt.Println("Running")
-	firebase.InitFirebase()
 
 	http.HandleFunc(constants.DEFAULT_PATH, handlers.DefaultHandler)
 	http.HandleFunc(constants.CASES_PATH, handlers.CasesHandler)

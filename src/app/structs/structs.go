@@ -38,8 +38,8 @@ type Policy struct {
 }
 
 type Webhooks struct {
-	WebhookID string `json:"webhookID"`
-	Url       string `json:"URL"`
-	Country   string `json:"country"`
-	Calls     int    `json:"calls"`
+	WebhookID string `json:"webhookID,omitempty"`
+	Url       string `json:"URL,omitempty"`
+	Country   string `json:"country,omitempty"`
+	Calls     int    `json:"calls,omitempty"`
 }
