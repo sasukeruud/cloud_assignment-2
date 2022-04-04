@@ -16,17 +16,12 @@ import (
 	"google.golang.org/api/option"
 )
 
-var webhooks = []structs.Webhooks{}
-
 // Firebase context and client used by Firestore functions throughout the program.
 var ctx context.Context
 var client *firestore.Client
 
 // Collection name in Firestore
 const collection = "webhooks"
-
-// Message counter to produce some variation in content
-var ct = 0
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -42,11 +37,12 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getNotification(w http.ResponseWriter, r *http.Request) {
+	var webhooks []structs.Webhooks
+	var o structs.Webhooks
+
 	ctx := context.Background()
 	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
-	var webhooks []structs.Webhooks
-	var o structs.Webhooks
 
 	if err != nil {
 		log.Fatal("error initializing app:", err)
@@ -70,8 +66,7 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			m := doc.Data()
-			jsonString, err := json.Marshal(m)
+			jsonString, err := json.Marshal(doc.Data())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -83,8 +78,7 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error during encoding", http.StatusInternalServerError)
 			}
 		} else {
-			// Collective retrieval of messages
-			iter := client.Collection(collection).Documents(ctx) // Loop through all entries in collection "messages"
+			iter := client.Collection(collection).Documents(ctx)
 
 			for {
 				doc, err := iter.Next()
@@ -94,11 +88,8 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatalf("Failed to iterate: %v", err)
 				}
-				// Note: You can access the document ID using "doc.Ref.ID"
 
-				// A message map with string keys. Each key is one field, like "text" or "timestamp"
-				m := doc.Data()
-				jsonString, err := json.Marshal(m)
+				jsonString, err := json.Marshal(doc.Data())
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -106,33 +97,14 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 				o.WebhookID = doc.Ref.ID
 				webhooks = append(webhooks, o)
 			}
-			err1 := json.NewEncoder(w).Encode(webhooks)
-			if err1 != nil {
+			err := json.NewEncoder(w).Encode(webhooks)
+			if err != nil {
 				http.Error(w, "Error during encoding", http.StatusInternalServerError)
 			}
 		}
 
 	} else {
-		// Collective retrieval of messages
-		iter := client.Collection(collection).Documents(ctx) // Loop through all entries in collection "messages"
-
-		for {
-			doc, err := iter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				log.Fatalf("Failed to iterate: %v", err)
-			}
-			// Note: You can access the document ID using "doc.Ref.ID"
-
-			// A message map with string keys. Each key is one field, like "text" or "timestamp"
-			m := doc.Data()
-			_, err = fmt.Fprintln(w, m)
-			if err != nil {
-				http.Error(w, "Error while writing response body.", http.StatusInternalServerError)
-			}
-		}
+		fmt.Fprint(w, "something wrong have happened", http.StatusBadGateway)
 	}
 
 	defer func() {
@@ -148,6 +120,7 @@ func deleteNotification(w http.ResponseWriter, r *http.Request) {
 }
 
 func postNotification(w http.ResponseWriter, r *http.Request) {
+	var webhooks []structs.Webhooks
 
 	webhook := structs.Webhooks{}
 
@@ -198,7 +171,7 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 				"country": n.Country,
 				"calls":   n.Calls,
 			})
-		ct++
+		//ct++
 		if err != nil {
 			// Error handling
 			http.Error(w, "Error when adding message "+string(text)+", Error: "+err.Error(), http.StatusBadRequest)
