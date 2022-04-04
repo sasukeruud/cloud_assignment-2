@@ -120,28 +120,10 @@ func deleteNotification(w http.ResponseWriter, r *http.Request) {
 }
 
 func postNotification(w http.ResponseWriter, r *http.Request) {
-	var webhooks []structs.Webhooks
-
-	webhook := structs.Webhooks{}
-
-	//content, err := json.Marshal()
-	AddMessage(w, r)
-
-	err := json.NewDecoder(r.Body).Decode(&webhook)
-	if err != nil {
-		http.Error(w, "Something went wrong", http.StatusBadRequest)
-	}
-
-	webhooks = append(webhooks, webhook)
-
-	fmt.Println(webhooks)
-}
-
-func AddMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
-	var n structs.Webhooks
+	var o structs.Webhooks
 
 	if err != nil {
 		log.Fatal("error initializing app:", err)
@@ -152,33 +134,26 @@ func AddMessage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// very generic way of reading body; should be customized to specific use case
-	text, err := ioutil.ReadAll(r.Body)
-	json.Unmarshal(text, &n)
+
+	info, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Reading of payload failed", http.StatusInternalServerError)
+		http.Error(w, "Error reading firebase database", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("Received message ", string(text))
-	if len(string(text)) == 0 {
-		http.Error(w, "Your message appears to be empty. Ensure to terminate URI with /.", http.StatusBadRequest)
+	if len(string(info)) == 0 {
+		http.Error(w, "You have not entered any inforamation", http.StatusBadRequest)
 	} else {
-		// Add element in embedded structure.
-		// Note: this structure is defined by the client; but exemplifying a complex one here (including Firestore timestamps).
+		json.Unmarshal(info, &o)
 		id, _, err := client.Collection(collection).Add(ctx,
 			map[string]interface{}{
-				"url":     n.Url,
-				"country": n.Country,
-				"calls":   n.Calls,
+				"url":     o.Url,
+				"country": o.Country,
+				"calls":   o.Calls,
 			})
-		//ct++
 		if err != nil {
-			// Error handling
-			http.Error(w, "Error when adding message "+string(text)+", Error: "+err.Error(), http.StatusBadRequest)
+			http.Error(w, "Error when adding message "+string(info)+", Error: "+err.Error(), http.StatusBadRequest)
 			return
 		} else {
-			fmt.Println("Entry added to collection. Identifier of returned document: " + id.ID)
-			// Returns document ID in body
 			http.Error(w, id.ID, http.StatusCreated)
 			return
 		}
