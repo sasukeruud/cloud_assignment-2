@@ -37,9 +37,9 @@ type Policy struct {
 	} `json:"stringencyData"`
 }
 
-type Notification struct {
-	WebhookID string
-	Url       string
-	Country   string
-	Calls     int
+type Webhooks struct {
+	WebhookID string `json:"webhookID"`
+	Url       string `json:"URL"`
+	Country   string `json:"country"`
+	Calls     int    `json:"calls"`
 }
