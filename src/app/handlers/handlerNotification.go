@@ -117,6 +117,41 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 
 func deleteNotification(w http.ResponseWriter, r *http.Request) {
 
+	ctx := context.Background()
+	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
+
+	if err != nil {
+		log.Fatal("error initializing app:", err)
+	}
+
+	client, err := app.Firestore(ctx)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	elem := strings.Split(r.URL.Path, "/")
+
+	if len(elem) >= 4 {
+		delete := elem[4]
+		res, err := client.Collection(collection).Doc(delete).Delete(ctx)
+		if err != nil {
+			fmt.Fprint(w, "error when trying to delete")
+			return
+		}
+
+		fmt.Fprintf(w, "webhook was deleted at: "+res.UpdateTime.GoString())
+
+	} else {
+
+	}
+
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			log.Fatal("Closing of the firebase client failed. Error:", err)
+		}
+	}()
 }
 
 func postNotification(w http.ResponseWriter, r *http.Request) {
