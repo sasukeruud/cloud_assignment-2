@@ -216,55 +216,59 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 }
 
 func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
-	webhooks = GetWebhooks(w, r)
-	country_calls := structs.Country_calls{}
-	ctx = context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
+	if !mock {
+		webhooks = GetWebhooks(w, r)
+		country_calls := structs.Country_calls{}
+		ctx = context.Background()
+		opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+		app, err := firebase.NewApp(ctx, nil, opt)
 
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err = app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	json.Unmarshal(getCountry(search), &country_calls)
-
-	str, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error during decoding message content. Error: " + string(str))
-	}
-
-	for _, e := range webhooks {
-		jsonString, err := json.Marshal(e)
 		if err != nil {
-			http.Error(w, "something went wrong", http.StatusBadGateway)
+			log.Fatal("error initializing app:", err)
 		}
-		if e.Country == search {
-			if country_calls.Called >= e.Calls {
-				go callUrl(e.Url, "POST", jsonString)
-				country_calls.Called = country_calls.Called + 1
-			} else {
-				country_calls.Called = country_calls.Called + 1
+
+		client, err = app.Firestore(ctx)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		json.Unmarshal(getCountry(search), &country_calls)
+
+		str, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Fatal("Error during decoding message content. Error: " + string(str))
+		}
+
+		for _, e := range webhooks {
+			jsonString, err := json.Marshal(e)
+			if err != nil {
+				http.Error(w, "something went wrong", http.StatusBadGateway)
 			}
+			if e.Country == search {
+				if country_calls.Called >= e.Calls {
+					go callUrl(e.Url, "POST", jsonString)
+					country_calls.Called = country_calls.Called + 1
+				} else {
+					country_calls.Called = country_calls.Called + 1
+				}
+			}
+
 		}
 
+		client.Collection(coll).Doc(country_calls.Country_id).Set(ctx, map[string]interface{}{
+			"country": search,
+			"called":  country_calls.Called,
+		})
+		defer func() {
+			err := client.Close()
+			if err != nil {
+				log.Fatal("Closing of the firebase client failed. Error:", err)
+			}
+		}()
+	} else {
+		return
 	}
-
-	client.Collection(coll).Doc(country_calls.Country_id).Set(ctx, map[string]interface{}{
-		"country": search,
-		"called":  country_calls.Called,
-	})
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 }
 
 func callUrl(url string, method string, content []byte) {

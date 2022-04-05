@@ -15,11 +15,58 @@ import (
 const URL = "http://localhost:8080"
 
 func TestCasesHandler(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(CasesHandler))
 
+	defer server.Close()
+
+	client := http.Client{}
+
+	res, err := client.Get(server.URL + constants.CASES_PATH)
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	assert.Equal(t, res.StatusCode, http.StatusOK)
+
+	check := "test"
+	jsonString, err := json.Marshal(check)
+	if err != nil {
+		t.Fatal("Error when marshaling json: ", err.Error())
+	}
+
+	req, err := http.NewRequest("POST", (server.URL + constants.POLICY_PATH), bytes.NewReader(jsonString))
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	res1, err := client.Do(req)
+	if err != nil {
+		t.Fatal("Error when sending POST request: ", err.Error())
+	}
+
+	assert.Equal(t, res1.StatusCode, http.StatusOK)
 }
 
 func TestCasesGetRequest(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(CasesHandler))
 
+	defer server.Close()
+
+	client := http.Client{}
+
+	res, err := client.Get(server.URL + constants.CASES_PATH + "Norway")
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	assert.Equal(t, res.StatusCode, http.StatusOK)
+
+	res1, err := client.Get(server.URL + constants.CASES_PATH + "Norw")
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	assert.Equal(t, res1.StatusCode, http.StatusOK)
 }
 
 func TestDefaultHandler(t *testing.T) {
