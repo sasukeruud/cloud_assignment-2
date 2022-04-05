@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"assignment_2/src/app/structs"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/firestore"
@@ -19,9 +21,11 @@ import (
 // Firebase context and client used by Firestore functions throughout the program.
 var ctx context.Context
 var client *firestore.Client
+var webhooks = []structs.Webhooks{}
 
 // Collection name in Firestore
 const collection = "webhooks"
+const coll = "country_calls"
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -202,7 +206,7 @@ func postNotification(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-func GetWebhookNumber(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
+func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 	var webhooks []structs.Webhooks
 	var o structs.Webhooks
 
@@ -248,4 +252,96 @@ func GetWebhookNumber(w http.ResponseWriter, r *http.Request) []structs.Webhooks
 	}()
 
 	return webhooks
+}
+
+func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
+	webhooks = GetWebhooks(w, r)
+	country_calls := structs.Country_calls{}
+	ctx := context.Background()
+	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
+
+	if err != nil {
+		log.Fatal("error initializing app:", err)
+	}
+
+	client, err := app.Firestore(ctx)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res := client.Collection(coll).Doc(search)
+
+	doc, err := res.Get(ctx)
+	if err != nil {
+		http.Error(w, "Error extracting body of returned document of message "+search, http.StatusInternalServerError)
+		return
+	}
+
+	jsonString, err := json.Marshal(doc.Data())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.Unmarshal(jsonString, &country_calls)
+
+	str, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Error during decoding message content. Error: " + string(str))
+	}
+
+	for _, e := range webhooks {
+		jsonString, err := json.Marshal(e)
+		if err != nil {
+			http.Error(w, "something went wrong", http.StatusBadGateway)
+		}
+		if e.Country == search {
+			if country_calls.Called >= e.Calls {
+				go CallUrl(e.Url, "POST", jsonString)
+				country_calls.Called = country_calls.Called + 1
+			} else {
+				country_calls.Called = country_calls.Called + 1
+			}
+		}
+
+	}
+
+	client.Collection(coll).Doc(search).Set(ctx, map[string]interface{}{
+		"called": country_calls.Called,
+	})
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			log.Fatal("Closing of the firebase client failed. Error:", err)
+		}
+	}()
+}
+
+func CallUrl(url string, method string, content []byte) {
+	//fmt.Println("Attempting invocation of url " + url + " with content '" + content + "'.")
+	//res, err := http.Post(url, "text/plain", bytes.NewReader([]byte(content)))
+	req, err := http.NewRequest(method, url, bytes.NewReader(content))
+	if err != nil {
+		log.Printf("%v", "Error during request creation. Error:", err)
+		return
+	}
+
+	// Perform invocation
+	client := http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println("Error in HTTP request. Error:", err)
+		return
+	}
+
+	// Read the response
+	response, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println("Something is wrong with invocation response. Error:", err)
+		return
+	}
+
+	fmt.Println("Webhook invoked. Received status code " + strconv.Itoa(res.StatusCode) +
+		" and body: " + string(response))
 }

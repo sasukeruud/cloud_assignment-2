@@ -25,6 +25,7 @@ func casesGetRequest(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 
 		fmt.Fprintf(w, string(readjson.ReadCasesApi(search)))
+		WebhookCall(w, r, search)
 
 	} else {
 		fmt.Fprintf(w, "You may have tried a different http request than GET or you have not entered a search word")
