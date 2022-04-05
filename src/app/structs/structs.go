@@ -43,3 +43,8 @@ type Webhooks struct {
 	Country   string `json:"country,omitempty"`
 	Calls     int    `json:"calls,omitempty"`
 }
+
+type Country_calls struct {
+	Country string `json:"country_calls"`
+	Called  int    `json:"called"`
+}
