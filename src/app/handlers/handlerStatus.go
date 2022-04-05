@@ -31,7 +31,7 @@ func statusHandlerGet(w http.ResponseWriter, r *http.Request) {
 	status := structs.Status{
 		CovidCasesApi:  respCases.StatusCode,
 		CovidPolicyApi: respPolicy.StatusCode,
-		Webhooks:       len(GetWebhookNumber(w, r)),
+		Webhooks:       len(GetWebhooks(w, r)),
 		Version:        constants.VERSION,
 		Uptime:         time.Duration.Seconds(time.Since(start)),
 	}
