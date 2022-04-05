@@ -201,3 +201,51 @@ func postNotification(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 }
+
+func GetWebhookNumber(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
+	var webhooks []structs.Webhooks
+	var o structs.Webhooks
+
+	ctx := context.Background()
+	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
+
+	if err != nil {
+		log.Fatal("error initializing app:", err)
+	}
+
+	client, err := app.Firestore(ctx)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	iter := client.Collection(collection).Documents(ctx)
+
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+
+		jsonString, err := json.Marshal(doc.Data())
+		if err != nil {
+			log.Fatal(err)
+		}
+		json.Unmarshal(jsonString, &o)
+		o.WebhookID = doc.Ref.ID
+		webhooks = append(webhooks, o)
+	}
+
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			log.Fatal("Closing of the firebase client failed. Error:", err)
+		}
+	}()
+
+	return webhooks
+}
