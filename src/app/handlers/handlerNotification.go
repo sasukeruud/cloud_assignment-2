@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -22,6 +23,7 @@ import (
 var ctx context.Context
 var client *firestore.Client
 var webhooks = []structs.Webhooks{}
+var mock = true
 
 // Collection name in Firestore
 const collection = "webhooks"
@@ -164,49 +166,53 @@ func postNotification(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
-	var webhooks []structs.Webhooks
-	var o structs.Webhooks
-	ctx = context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
+	if !mock {
+		var webhooks []structs.Webhooks
+		var o structs.Webhooks
+		ctx = context.Background()
+		opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+		app, err := firebase.NewApp(ctx, nil, opt)
 
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err = app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	iter := client.Collection(collection).Documents(ctx)
-
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
 		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
+			log.Fatal("error initializing app:", err)
 		}
 
-		jsonString, err := json.Marshal(doc.Data())
+		client, err = app.Firestore(ctx)
+
 		if err != nil {
 			log.Fatal(err)
 		}
-		json.Unmarshal(jsonString, &o)
-		o.WebhookID = doc.Ref.ID
-		webhooks = append(webhooks, o)
-	}
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 
-	return webhooks
+		iter := client.Collection(collection).Documents(ctx)
+
+		for {
+			doc, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Failed to iterate: %v", err)
+			}
+
+			jsonString, err := json.Marshal(doc.Data())
+			if err != nil {
+				log.Fatal(err)
+			}
+			json.Unmarshal(jsonString, &o)
+			o.WebhookID = doc.Ref.ID
+			webhooks = append(webhooks, o)
+		}
+		defer func() {
+			err := client.Close()
+			if err != nil {
+				log.Fatal("Closing of the firebase client failed. Error:", err)
+			}
+		}()
+
+		return webhooks
+	} else {
+		return FirebaseMock()
+	}
 }
 
 func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
@@ -264,7 +270,7 @@ func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
 func callUrl(url string, method string, content []byte) {
 	req, err := http.NewRequest(method, url, bytes.NewReader(content))
 	if err != nil {
-		log.Printf("%v", "Error during request creation. Error:", err)
+		log.Printf("%v Error during request creation. Error:", err)
 		return
 	}
 
@@ -326,4 +332,25 @@ func getCountry(search string) []byte {
 	}
 
 	return jsonString
+}
+
+func FirebaseMock() []structs.Webhooks {
+	var webhook structs.Webhooks
+	var webhooks []structs.Webhooks
+	jsonFile, err := os.Open("res/firebaseMock.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.Unmarshal(byteValue, &webhook)
+	webhooks = append(webhooks, webhook)
+
+	return webhooks
 }
