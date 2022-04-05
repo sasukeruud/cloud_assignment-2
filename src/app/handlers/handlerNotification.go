@@ -28,6 +28,19 @@ const collection = "webhooks"
 const coll = "country_calls"
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
+
+	if err != nil {
+		log.Fatal("error initializing app:", err)
+	}
+
+	client, err = app.Firestore(ctx)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	switch r.Method {
 	case http.MethodPost:
@@ -38,25 +51,18 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 		getNotification(w, r)
 	default:
 	}
+
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			log.Fatal("Closing of the firebase client failed. Error:", err)
+		}
+	}()
 }
 
 func getNotification(w http.ResponseWriter, r *http.Request) {
 	var webhooks []structs.Webhooks
 	var o structs.Webhooks
-
-	ctx := context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err := app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 	elem := strings.Split(r.URL.Path, "/")
 
 	if len(elem) > 3 {
@@ -110,30 +116,9 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprint(w, "something wrong have happened", http.StatusBadGateway)
 	}
-
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 }
 
 func deleteNotification(w http.ResponseWriter, r *http.Request) {
-
-	ctx := context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err := app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 	elem := strings.Split(r.URL.Path, "/")
 
 	if len(elem) >= 4 {
@@ -149,31 +134,10 @@ func deleteNotification(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 	}
-
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 }
 
 func postNotification(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
 	var o structs.Webhooks
-
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err := app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	info, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading firebase database", http.StatusInternalServerError)
@@ -197,32 +161,11 @@ func postNotification(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 }
 
 func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 	var webhooks []structs.Webhooks
 	var o structs.Webhooks
-
-	ctx := context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err := app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	iter := client.Collection(collection).Documents(ctx)
 
@@ -244,32 +187,12 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 		webhooks = append(webhooks, o)
 	}
 
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
-
 	return webhooks
 }
 
 func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
 	webhooks = GetWebhooks(w, r)
 	country_calls := structs.Country_calls{}
-	ctx := context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-
-	if err != nil {
-		log.Fatal("error initializing app:", err)
-	}
-
-	client, err := app.Firestore(ctx)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	res := client.Collection(coll).Doc(search)
 
@@ -310,12 +233,6 @@ func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
 	client.Collection(coll).Doc(search).Set(ctx, map[string]interface{}{
 		"called": country_calls.Called,
 	})
-	defer func() {
-		err := client.Close()
-		if err != nil {
-			log.Fatal("Closing of the firebase client failed. Error:", err)
-		}
-	}()
 }
 
 func CallUrl(url string, method string, content []byte) {
