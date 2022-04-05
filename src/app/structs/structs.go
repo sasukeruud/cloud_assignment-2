@@ -3,7 +3,7 @@ package structs
 type Status struct {
 	CovidCasesApi  int
 	CovidPolicyApi int
-	Webhooks       string
+	Webhooks       int
 	Version        string
 	Uptime         float64
 }
