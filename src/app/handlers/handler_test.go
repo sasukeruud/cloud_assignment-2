@@ -5,7 +5,6 @@ import (
 	"assignment_2/src/app/structs"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -71,8 +70,6 @@ func TestGetPolicyRequest(t *testing.T) {
 
 	client := http.Client{}
 
-	fmt.Print("URL:", server.URL)
-
 	res, err := client.Get(server.URL + constants.POLICY_PATH + "NOR/2021-01-01")
 	if err != nil {
 		t.Fatal("Get request to URL failed:", err.Error())
@@ -94,5 +91,56 @@ func TestGetPolicyRequest(t *testing.T) {
 }
 
 func TestStatusHandler(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(StatusHandler))
 
+	defer server.Close()
+
+	check := "test"
+	jsonString, err := json.Marshal(check)
+	if err != nil {
+		t.Fatal("Error when marshaling json: ", err.Error())
+	}
+
+	client := http.Client{}
+
+	req, err := http.NewRequest("POST", (server.URL + constants.STATUS_PATH), bytes.NewReader(jsonString))
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		t.Fatal("Error when sending POST request: ", err.Error())
+	}
+
+	assert.Equal(t, res.StatusCode, http.StatusOK)
+}
+
+func TestStatusHandlerGet(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(StatusHandler))
+
+	defer server.Close()
+
+	client := http.Client{}
+
+	res, err := client.Get(server.URL + constants.STATUS_PATH)
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+
+	statuses := []structs.Status{}
+	status := structs.Status{}
+	err2 := json.NewDecoder(res.Body).Decode(&status)
+	if err2 != nil {
+		t.Fatal("Error during decoding:", err2.Error())
+	}
+	statuses = append(statuses, status)
+
+	assert.Equal(t, len(statuses), 1)
+}
+
+func TestFirebaseMock(t *testing.T) {
+	webhooks := FirebaseMock()
+
+	assert.Equal(t, len(webhooks), 1)
 }
