@@ -69,9 +69,3 @@ func ReadPolicyApi(country, date string) []structs.Policy {
 
 	return policyInfo
 }
-
-func ReadNotification(search string) []structs.Webhooks {
-	var notification []structs.Webhooks
-
-	return notification
-}
