@@ -85,6 +85,12 @@ func TestGetPolicyRequest(t *testing.T) {
 	}
 
 	assert.Equal(t, len(policies), 1)
+
+	res1, err := client.Get(server.URL + constants.POLICY_PATH + "NOR")
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+	assert.Equal(t, res1.StatusCode, http.StatusNonAuthoritativeInfo)
 }
 
 func TestStatusHandler(t *testing.T) {
