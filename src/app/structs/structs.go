@@ -8,18 +8,6 @@ type Status struct {
 	Uptime         float64
 }
 
-type Cases struct {
-	Data struct {
-		Country struct {
-			Name       string `json:"name"`
-			MostRecent struct {
-				Date      string `json:"date"`
-				Confirmed int    `json:"confirmed"`
-			} `json:"mostRecent"`
-		} `json:"country"`
-	} `json:"data"`
-}
-
 type Policy struct {
 	PolicyActions []struct {
 		PolicyTypeCode    string      `json:"policy_type_code"`
