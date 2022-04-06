@@ -6,9 +6,13 @@ LABEL stage=builder
 WORKDIR /go/src/app/cmd
 
 # Copy relevant folders into container
-COPY ./cmd /go/src/app/cmd
-COPY ./handlers /go/src/app/handlers
-COPY ./readJson /go/src/app/readJson
+COPY ./main /go/src/app/cmd
+COPY ./handlerCases /go/src/app/handlers
+COPY ./handlerDefault /go/src/app/handlers
+COPY ./handlerNotification /go/src/app/handlers
+COPY ./handlerStatus /go/src/app/handlers
+COPY ./handlerpolicy /go/src/app/handlers
+COPY ./readApi /go/src/app/readJson
 COPY ./structs /go/src/app/structs
 COPY ./go.mod /go/src/app/go.mod
 COPY ./go.sum /go/src/app/go.sum
