@@ -6,7 +6,7 @@ LABEL stage=builder
 WORKDIR /go/src/app/cmd
 
 # Copy relevant folders into container
-COPY ./main /go/src/app/cmd
+COPY ./cmd /go/src/app/cmd
 COPY ./handlerCases /go/src/app/handlers
 COPY ./handlerDefault /go/src/app/handlers
 COPY ./handlerNotification /go/src/app/handlers
@@ -31,7 +31,7 @@ RUN zip -q -r -0 /zoneinfo.zip .
 # Final container
 FROM scratch AS final
 
-LABEL maintainer="mathiws@stud.ntnu.no"
+LABEL maintainer="robinru@stud.ntnu.no"
 
 # Root as working directory to copy compiled file to
 WORKDIR /
