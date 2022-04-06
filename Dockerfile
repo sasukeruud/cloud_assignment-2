@@ -3,12 +3,12 @@ FROM golang:1.17-alpine as Builder
 LABEL stage=builder
 
 # Set up execution environment in container's GOPATH
-WORKDIR /go/src/app/cmd
+WORKDIR /go/src/app/src/app/cmd
 
 # Copy relevant folders into container
 COPY ./go.mod /go/src/app/go.mod
 COPY ./go.sum /go/src/app/go.sum
-COPY ./cmd /go/src/app/src/app/
+COPY ./cmd /go/src/app/src/app/cmd
 COPY ./handlers /go/src/app/src/app/handlers
 COPY ./readJson /go/src/app/src/app/readJson
 COPY ./structs /go/src/app/src/app/structs
@@ -33,7 +33,7 @@ LABEL maintainer="robinru@stud.ntnu.no"
 WORKDIR /
 
 # Retrieve binary from builder container
-COPY --from=builder /src/app/cmd/main .
+COPY --from=builder /src/app/src/app/cmd/main .
 
 # Setting time zone data
 ENV ZONEINFO /zoneinfo.zip
