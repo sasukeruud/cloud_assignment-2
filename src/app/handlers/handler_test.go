@@ -186,7 +186,21 @@ func TestStatusHandlerGet(t *testing.T) {
 	assert.Equal(t, len(statuses), 1)
 }
 
-func TestFirebaseMock(t *testing.T) {
+func aTestNotificationHandler(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(NotificationHandler))
+
+	defer server.Close()
+
+	client := http.Client{}
+
+	res, err := client.Get(server.URL + constants.NOTIFICATION_PATH + "QnzWFw6MoSbejTI8R4GO")
+	if err != nil {
+		t.Fatal("Get request to URL failed:", err.Error())
+	}
+	assert.Equal(t, res.StatusCode, http.StatusOK)
+}
+
+func aTestFirebaseMock(t *testing.T) {
 	webhooks := FirebaseMock()
 
 	assert.Equal(t, len(webhooks), 1)
