@@ -11,6 +11,7 @@ COPY ./go.sum /go/src/app/go.sum
 COPY ./cmd /go/src/app/cmd
 COPY ./handlers /go/src/app/handlers
 COPY ./readJson /go/src/app/readJson
+COPY ./structs /go/src/app/structs
 
 # Compile binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o server
@@ -45,4 +46,4 @@ COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 80
 
 # Instantiate server
-CMD ["./main"]
+CMD ["./server"]
