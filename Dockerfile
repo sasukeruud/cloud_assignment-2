@@ -11,7 +11,6 @@ COPY ./go.sum /go/src/app/go.sum
 COPY ./cmd /go/src/app/src/app/cmd
 COPY ./handlers /go/src/app/src/app/handlers
 COPY ./readJson /go/src/app/src/app/readJson
-COPY ./structs /go/src/app/src/app/structs
 
 # Compile binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o server
