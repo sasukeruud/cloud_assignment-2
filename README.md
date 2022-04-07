@@ -105,6 +105,7 @@ URL: serverIP/corona/v1/status/
 }
 ```
 ## /corona/v1/notifications/
+Check web hook calls:https://webhook.site/#!/9727ee26-7316-49f8-a2cd-61841f4b9e63/f1651adc-ab2d-4362-9127-27828d4f1898/1
 ### -Request
 ```
 Method: GET
