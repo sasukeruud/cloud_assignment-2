@@ -8,6 +8,7 @@ WORKDIR /go/src/app/cmd
 # Copy relevant folders into container
 COPY ./go.mod /go/src/app/go.mod
 COPY ./go.sum /go/src/app/go.sum
+COPY ./constants.go /go/src/app/constants.go
 COPY ./cmd /go/src/app/cmd
 COPY ./handlers /go/src/app/handlers
 COPY ./readJson /go/src/app/readJson
