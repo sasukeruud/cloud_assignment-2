@@ -32,7 +32,7 @@ LABEL maintainer="robinru@stud.ntnu.no"
 WORKDIR /
 
 # Retrieve binary from builder container
-COPY --from=builder /src/app/src/app/cmd/main .
+COPY --from=builder /src/app/cmd/main .
 
 # Setting time zone data
 ENV ZONEINFO /zoneinfo.zip
@@ -45,4 +45,4 @@ COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 80
 
 # Instantiate server
-CMD ["./server"]
+CMD ["./main"]
