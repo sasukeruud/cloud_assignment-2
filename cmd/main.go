@@ -1,8 +1,8 @@
 package main
 
 import (
-	constants "assignment_2/src/app"
-	"assignment_2/src/app/handlers"
+	constants "assignment_2"
+	"assignment_2/handlers"
 	"fmt"
 	"net/http"
 )

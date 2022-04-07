@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	constants "assignment_2/src/app"
-	"assignment_2/src/app/structs"
+	constants "assignment_2"
+	"assignment_2/structs"
 	"encoding/json"
 	"net/http"
 	"time"

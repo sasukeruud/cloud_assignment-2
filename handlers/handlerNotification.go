@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"assignment_2/src/app/structs"
+	"assignment_2/structs"
 	"bytes"
 	"context"
 	"encoding/json"

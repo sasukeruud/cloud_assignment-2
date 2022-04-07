@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	readjson "assignment_2/src/app/readJson"
+	readjson "assignment_2/readJson"
 	"net/http"
 	"path"
 )

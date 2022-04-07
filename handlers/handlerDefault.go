@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	constants "assignment_2/src/app"
+	constants "assignment_2"
 	"net/http"
 )
 

@@ -1,8 +1,8 @@
 package readjson
 
 import (
-	constants "assignment_2/src/app"
-	"assignment_2/src/app/structs"
+	constants "assignment_2"
+	"assignment_2/structs"
 	"bytes"
 	"encoding/json"
 	"fmt"
