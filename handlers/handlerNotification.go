@@ -23,7 +23,7 @@ import (
 var ctx context.Context
 var client *firestore.Client
 var webhooks = []structs.Webhooks{}
-var mock = true
+var mock = false
 
 // Collection name in Firestore
 const collection = "webhooks"

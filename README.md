@@ -24,6 +24,8 @@ In the following, you will find the specification for the REST API exposed to th
 ## How to run application
 To run the application run "go run .\src\app\cmd\main.go" from the root forlder of the project
 
+To run tests in the application you need to change "var mock = false" in handlerNotification to "var mock = true".
+
 # Endpoints
 This application have 4 different endpoints that can be used. 
 
