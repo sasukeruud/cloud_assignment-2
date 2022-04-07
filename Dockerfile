@@ -34,7 +34,7 @@ LABEL maintainer="robinru@stud.ntnu.no"
 WORKDIR /
 
 # Retrieve binary from builder container
-COPY --from=builder /src/app/cmd/main .
+COPY --from=builder /src/app/cmd/server .
 
 # Setting time zone data
 ENV ZONEINFO /zoneinfo.zip
