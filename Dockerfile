@@ -36,7 +36,7 @@ LABEL maintainer="robinru@stud.ntnu.no"
 WORKDIR /
 
 # Retrieve binary from builder container
-COPY --from=builder /src/app/cmd/server .
+COPY --from=builder /src/app/cmd/ .
 COPY ./auth.json .
 
 # Setting time zone data
