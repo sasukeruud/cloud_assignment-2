@@ -31,7 +31,7 @@ const coll = "country_calls"
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
-	opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+	opt := option.WithCredentialsFile("./auth.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 
 	if err != nil {
@@ -170,7 +170,7 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 		var webhooks []structs.Webhooks
 		var o structs.Webhooks
 		ctx = context.Background()
-		opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+		opt := option.WithCredentialsFile("./auth.json")
 		app, err := firebase.NewApp(ctx, nil, opt)
 
 		if err != nil {
@@ -220,7 +220,7 @@ func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
 		webhooks = GetWebhooks(w, r)
 		country_calls := structs.Country_calls{}
 		ctx = context.Background()
-		opt := option.WithCredentialsFile("./robinruassignment-2-firebase-adminsdk-7fl5y-7ff7b94aac.json")
+		opt := option.WithCredentialsFile("./auth.json")
 		app, err := firebase.NewApp(ctx, nil, opt)
 
 		if err != nil {

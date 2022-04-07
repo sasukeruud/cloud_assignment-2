@@ -14,6 +14,8 @@ COPY ./handlers /go/src/app/handlers
 COPY ./readJson /go/src/app/readJson
 COPY ./structs /go/src/app/structs
 
+RUN go mod tidy
+
 # Compile binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o server
 
@@ -35,6 +37,7 @@ WORKDIR /
 
 # Retrieve binary from builder container
 COPY --from=builder /src/app/cmd/server .
+COPY ./auth.json .
 
 # Setting time zone data
 ENV ZONEINFO /zoneinfo.zip
