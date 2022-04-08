@@ -29,6 +29,9 @@ var mock = false
 const collection = "webhooks"
 const coll = "country_calls"
 
+/*
+Handler to check what type of http request that get sent to the application.
+Will execute correct code based on what the http request is*/
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	opt := option.WithCredentialsFile("./auth.json")
@@ -62,6 +65,8 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
+/*
+Function that will give a response of either one webhook data or a list of webhook data.*/
 func getNotification(w http.ResponseWriter, r *http.Request) {
 	var webhooks []structs.Webhooks
 	var o structs.Webhooks
@@ -69,6 +74,7 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 
 	if len(elem) > 3 {
 		search := elem[4]
+		//checks that there is data in the fourth element of the slice
 		if len(search) != 0 {
 			res := client.Collection(collection).Doc(search)
 
@@ -120,6 +126,9 @@ func getNotification(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+Function to delete a webhook from the firebase databse.
+Uses the webhook ID to check which webhook it will delete*/
 func deleteNotification(w http.ResponseWriter, r *http.Request) {
 	elem := strings.Split(r.URL.Path, "/")
 
@@ -127,8 +136,7 @@ func deleteNotification(w http.ResponseWriter, r *http.Request) {
 		delete := elem[4]
 		res, err := client.Collection(collection).Doc(delete).Delete(ctx)
 		if err != nil {
-			fmt.Fprint(w, "error when trying to delete")
-			return
+			http.Error(w, "error when trying to delete", http.StatusAccepted)
 		}
 
 		fmt.Fprintf(w, "webhook was deleted at: "+res.UpdateTime.GoString())
@@ -138,6 +146,9 @@ func deleteNotification(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+Function to create a new set of data in the firebase database.
+Takes a json body to define what the data is going to be*/
 func postNotification(w http.ResponseWriter, r *http.Request) {
 	var o structs.Webhooks
 	info, err := ioutil.ReadAll(r.Body)
@@ -165,6 +176,9 @@ func postNotification(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+Function to get the data from the firebase database.
+returns a slice of webhooks.*/
 func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 	if !mock {
 		var webhooks []structs.Webhooks
@@ -215,6 +229,8 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) []structs.Webhooks {
 	}
 }
 
+/*
+Function to give out a POST request when a country it called*/
 func WebhookCall(w http.ResponseWriter, r *http.Request, search string) {
 	if !mock {
 		webhooks = GetWebhooks(w, r)
@@ -295,6 +311,9 @@ func callUrl(url string, method string, content []byte) {
 		" and body: " + string(response))
 }
 
+/*
+Function to get information about how many times a country have been called on by the application.
+Data is store on firebase.*/
 func getCountry(search string) []byte {
 	var country structs.Country_calls
 
@@ -338,6 +357,8 @@ func getCountry(search string) []byte {
 	return jsonString
 }
 
+/*
+Calls a json file to mock some parts of the database*/
 func FirebaseMock() []structs.Webhooks {
 	var webhook structs.Webhooks
 	var webhooks []structs.Webhooks
