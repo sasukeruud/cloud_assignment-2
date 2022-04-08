@@ -14,7 +14,9 @@ import (
 )
 
 /*
-function to read out the json data from the api*/
+function to read out the json data from the api.
+Takes in one variable to search for a spesific country.
+Returns a byte slice of the data*/
 func ReadCasesApi(search string) []byte {
 	jsonData := map[string]string{
 		"query": `
@@ -47,6 +49,10 @@ func ReadCasesApi(search string) []byte {
 	return data
 }
 
+/*
+Function to read out data from the policy api.
+It takes in to string variabales to define what it will search for.
+Returns a slice of policy*/
 func ReadPolicyApi(country, date string) []structs.Policy {
 	var policyInfo []structs.Policy
 	var policy structs.Policy
