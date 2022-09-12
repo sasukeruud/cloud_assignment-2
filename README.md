@@ -1,5 +1,5 @@
 # assignment - 2
-
+This assignment was further developt in assignment 3, docker instances was run on the school VM solution
 ## Assignment task
 In this assignment, you are going to develop a REST web application in Golang that provides the client with the ability to retrieve information about Corona cases occurring in different countries, as well as the number and stringency of current policies in place. For this purpose, you will interrogate existing web services and return the result in a given output format.
 The REST web services you will be using for this purpose are:
